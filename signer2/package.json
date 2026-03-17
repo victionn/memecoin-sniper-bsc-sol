@@ -1,0 +1,35 @@
+{
+  "name": "bsc-instant-signer",
+  "version": "2.0.0",
+  "description": "Ultra-fast broadcast signer for BNB + Solana (Pump.fun / Jupiter) swaps.",
+  "type": "module",
+  "main": "signer.js",
+  "scripts": {
+    "start": "node signer.js",
+    "dev": "NODE_ENV=development node signer.js"
+  },
+  "dependencies": {
+    "@solana/web3.js": "^1.95.0",
+    "bs58": "^5.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "ethers": "^6.13.0",
+    "express": "^4.19.2",
+    "node-fetch": "^3.3.2"
+  },
+  "keywords": [
+    "signer",
+    "bnb",
+    "solana",
+    "pumpfun",
+    "pancakeswap",
+    "jupiter",
+    "memecoin",
+    "fast"
+  ],
+  "author": "Jintang Zhao",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  }
+}

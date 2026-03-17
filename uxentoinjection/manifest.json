@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "Uxento Card Injector",
+  "version": "1.1.0",
+  "description": "Inject synthetic tweet / reply / quote / retweet cards into uxento.io so the toaster can pick them up.",
+  "permissions": ["scripting", "activeTab", "storage"],
+  "host_permissions": ["https://uxento.io/*"],
+  "action": {
+    "default_title": "Uxento Injector",
+    "default_popup": "popup.html"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["uxento.config.json"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

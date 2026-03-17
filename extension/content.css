@@ -1,0 +1,104 @@
+/* ===== Bottom-right toaster host ===== */
+#uxento-toaster {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 2147483647; /* stay above site UI */
+  max-width: min(560px, 46vw);
+  pointer-events: none; /* only toasts can be clicked */
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+/* ===== Toast ===== */
+.uxento-toast {
+  pointer-events: auto;
+  background: #0b0b0f;
+  color: #eaeaf0;
+  border: 1px solid #2a2b33;
+  border-radius: 12px;
+  box-shadow: 0 16px 36px rgba(0,0,0,0.55);
+  overflow: hidden;
+  animation: ux-slide-in 180ms ease-out;
+}
+
+.uxento-toast__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: linear-gradient(180deg, #121221 0%, #0b0b0f 100%);
+  border-bottom: 1px solid #242533;
+}
+
+.uxento-toast__title {
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.2px;
+  color: #cfd2ff;
+}
+
+.uxento-toast__buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ux-btn {
+  appearance: none;
+  border: 1px solid #30324a;
+  background: #17182a;
+  color: #e5e7ff;
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.ux-btn:hover { background: #1e2040; }
+.ux-btn--danger { border-color: #3a2b2b; background: #2a1717; color: #ffd7d7; }
+.ux-btn--danger:hover { background: #3b1e1e; }
+
+.uxento-toast__body { padding: 10px 12px 12px; }
+
+/* Truncated preview; shows … and a fade-out */
+.ux-code {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 12px;
+  line-height: 1.4;
+  background: #0f1020;
+  border: 1px solid #252744;
+  border-radius: 8px;
+  padding: 10px;
+  max-height: 220px;
+  overflow: hidden;
+  position: relative;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 10;   /* number of lines visible */
+  -webkit-box-orient: vertical;
+}
+
+/* Faded tail to imply more content below */
+.ux-code::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 38px;
+  background: linear-gradient(180deg, rgba(15,16,32,0) 0%, rgba(15,16,32,1) 100%);
+  pointer-events: none;
+}
+
+@keyframes ux-slide-in {
+  from { transform: translateY(8px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+/* Compact mode if many toasts stack */
+#uxento-toaster.compact .ux-code {
+  max-height: 140px;
+  -webkit-line-clamp: 6;
+}

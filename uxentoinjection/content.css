@@ -1,0 +1,26 @@
+/* Uxento Injector — content styles + HUD */
+#uxi-hud, #uxiHud {
+  position: fixed;
+  right: 16px;
+  top: 16px;
+  z-index: 2147483647;
+  max-width: 420px;
+  background: #0c1020;
+  color: #dfe7ff;
+  border: 1px solid #27324a;
+  border-radius: 10px;
+  box-shadow: 0 16px 36px rgba(0,0,0,.55);
+  font-family: ui-sans-serif, system-ui, Segoe UI, Roboto, Arial, sans-serif;
+  padding: 10px;
+}
+#uxi-hud.hidden, #uxiHud.hidden { display: none; }
+#uxi-hud .row, #uxiHud .row { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+#uxi-hud .title, #uxiHud .title { font-weight: 700; font-size: 13px; color: #9bd1ff; }
+#uxi-hud .badge, #uxiHud .badge { font-size: 11px; opacity: .85; }
+#uxi-hud pre, #uxiHud pre { background:#0a0e1a; border:1px solid #22314a; border-radius:8px; padding:8px; max-height:160px; overflow:auto; margin:8px 0 0; }
+
+/* Visualize our injected cards (debug aid) */
+div[data-card="true"].uxi-simulated {
+  outline: 1px dashed rgba(97, 218, 251, 0.35);
+  outline-offset: 1px;
+}

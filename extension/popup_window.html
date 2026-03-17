@@ -1,0 +1,308 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>SlitSniper Ultimate — Popout</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="hdr">
+    <h1>SlitSniper Ultimate</h1>
+    <div style="display:flex;align-items:center;gap:8px">
+      <!-- no Popout button here, we're already in the popout -->
+      <button id="btnFetchUxento" class="btn" title="Fetch snapshots from uxento tab">Fetch Uxento</button>
+      <span id="envBadge" class="badge">...</span>
+    </div>
+  </header>
+
+  <nav class="row gap" style="padding:0 12px 12px 12px;flex-wrap:wrap;">
+    <button class="tab btn active" data-tab="buy">Buy</button>
+    <button class="tab btn" data-tab="sniper">Sniper</button>
+    <button class="tab btn" data-tab="orders">Orders</button>
+    <button class="tab btn" data-tab="settings">Settings</button>
+    <button class="tab btn" data-tab="debug">Debug</button>
+  </nav>
+
+  <!-- Buy Panel -->
+  <section class="panel active" id="panel-buy">
+    <div class="card">
+      <h2 class="h2">Quick Buy</h2>
+      <p style="font-size:12px;opacity:0.75;margin-top:0;">
+        Instant buy on BNB or Solana using your local signer.
+      </p>
+
+
+      <label class="lbl">Chain:
+        <select id="in-chain" class="inp" style="margin-top:4px;">
+          <option value="bnb">BNB (BEP-20)</option>
+          <option value="sol">Solana (SOL)</option>
+        </select>
+      </label>
+
+      <label class="lbl">Token CA / Mint:
+        <input id="in-ca" class="inp" placeholder="0x... or Solana mint" />
+      </label>
+
+      <div class="row gap" style="flex-wrap:wrap;">
+        <label class="lbl" style="flex:1;">Amount (BNB or SOL):
+          <input id="in-amt" class="inp" type="number" step="0.0001" value="0.01" />
+        </label>
+
+        <label class="lbl" style="flex:1;">Gas / Priority Fee:
+          <input id="in-gas" class="inp" type="number" step="0.1" value="3" />
+          <small style="opacity:0.7;font-size:11px;">BNB: gas gwei · SOL: priority fee</small>
+        </label>
+      </div>
+
+      <!-- Advanced Options -->
+      <details style="margin-top:12px;">
+        <summary style="cursor:pointer;font-weight:600;color:#89f;margin-bottom:8px;">⚙️ Advanced Options</summary>
+        <div style="padding:8px 0;">
+
+
+          <label class="lbl">Slippage % (0 = no min):
+            <input id="in-slippage" class="inp" type="number" step="0.1" value="0" placeholder="0" />
+            <small style="opacity:0.7;font-size:11px;">
+              BNB: 0 means no minOut guard.<br/>
+              SOL: use high slippage (40–60) or swaps will fail.
+            </small>
+          </label>
+
+          <label class="lbl">Deadline (seconds):
+            <input id="in-deadline" class="inp" type="number" value="1200" />
+          </label>
+        </div>
+      </details>
+
+      <div class="row gap" style="margin-top:12px;flex-wrap:wrap;">
+        <button id="btnBuy" class="btn btn-primary is-disabled">Buy Now</button>
+        <button id="btnCheckSigner" class="btn">Check Signer</button>
+        <button id="btnClear" class="btn">Clear Logs</button>
+      </div>
+
+      <pre id="logBuy" class="log" style="margin-top:12px;"></pre>
+    </div>
+  </section>
+
+  <!-- Sniper Panel -->
+  <section class="panel" id="panel-sniper">
+    <div class="card">
+<h2 class="h2">Sniper Rules</h2>
+<p style="font-size:12px;opacity:0.75;margin-top:0;">
+  Match incoming tweets from Uxento and auto-buy the linked coin.
+</p>
+
+<!-- NEW: Order Name -->
+<label class="lbl">Order Name:
+  <input id="sn-name" class="inp" placeholder="e.g. Elon BNB sniper" />
+</label>
+
+<label class="lbl">Tweet Type:
+  <select id="sn-type" class="inp">
+
+          <option value="">Any</option>
+          <option value="tweet">Tweet</option>
+          <option value="reply">Reply</option>
+          <option value="quote">Quote</option>
+          <option value="retweet">Retweet</option>
+        </select>
+      </label>
+
+      <label class="lbl">Author (@handle):
+        <input id="sn-author" class="inp" placeholder="@elonmusk" />
+      </label>
+
+      <label class="lbl">Words to match (comma-separated):
+        <input id="sn-content" class="inp" placeholder="bullish, deploy, pump" />
+      </label>
+
+      <div class="row gap" style="flex-wrap:wrap;">
+        <label class="lbl row" style="margin:0;align-items:center;">
+          <input type="radio" name="sn-logic" value="or" checked />
+          <span style="margin-left:6px;">OR (any word)</span>
+        </label>
+        <label class="lbl row" style="margin:0;align-items:center;">
+          <input type="radio" name="sn-logic" value="and" />
+          <span style="margin-left:6px;">AND (all words)</span>
+        </label>
+      </div>
+
+      <label class="lbl">Reference URL (quoted / replied / retweeted tweet):
+        <input id="sn-ref" class="inp" placeholder="https://x.com/..." />
+      </label>
+
+      <h3 class="h2" style="font-size:14px;margin-top:16px;">Buy Config</h3>
+
+      <label class="lbl">Chain to buy:
+        <select id="sn-chain" class="inp">
+          <option value="bnb">BNB (BEP-20)</option>
+          <option value="sol">Solana (SOL)</option>
+        </select>
+      </label>
+
+      <div class="row gap" style="flex-wrap:wrap;">
+        <label class="lbl" style="flex:1;">Amount to spend (BNB or SOL):
+          <input id="sn-amount" class="inp" type="number" step="0.0001" placeholder="0.01" />
+        </label>
+
+        <label class="lbl" style="flex:1;">Gas / Priority Fee:
+          <input id="sn-gas" class="inp" type="number" step="0.1" placeholder="3" />
+          <small style="opacity:0.7;font-size:11px;">BNB: gas gwei · SOL: priority fee</small>
+        </label>
+      </div>
+
+      <label class="lbl">Token CA / Mint:
+        <input id="sn-ca" class="inp" placeholder="0x... or Solana mint" />
+      </label>
+
+      <!-- Special buy: when enabled, sniper uses BNB watcher instead of direct CA buys -->
+<label class="lbl row" style="align-items:center;gap:8px;">
+  <input id="sn-special" type="checkbox" class="chk" />
+  <span>Use Special BNB watcher (ignore CA, buy first matching czautobiography)</span>
+</label>
+
+
+      <details style="margin-top:12px;">
+        <summary style="cursor:pointer;font-weight:600;color:#89f;margin-bottom:8px;">⚙️ Advanced Sniper Options</summary>
+        <div style="padding:8px 0;">
+
+          <!-- Multi buy checkbox (sniper orders only) - ADDED -->
+          <label class="lbl row" style="align-items:center; gap:8px; margin-top:6px;">
+            <input id="sn-multibuy" type="checkbox" class="chk" />
+            <span>Multi buy (send split buys to wallet #1 and wallet #2)</span>
+          </label>
+          <!-- End Multi buy -->
+           <label class="lbl row" style="align-items:center; gap:8px; margin-top:6px;">
+            <input id="sn-nightmode" type="checkbox" class="chk" />
+            <span>Night Mode (auto-sell 100% after buy)</span>
+          </label>
+          
+          <!-- Night Mode Timing Control - SIMPLIFIED -->
+          <div id="nightmode-timing" style="margin-left:24px; margin-top:8px; padding:8px; background:#0f1218; border:1px solid #2a3846; border-radius:6px; display:none;">
+            <div style="font-size:11px; color:#89f; margin-bottom:6px; font-weight:500;">⏱️ Sell Timing</div>
+            <label class="lbl">Sell after (seconds):
+              <input id="sn-nm-sellafter" class="inp" type="number" min="0.1" step="0.1" value="2" style="width:100px;" />
+              <small style="opacity:0.7;font-size:11px;display:block;margin-top:4px;">
+                Default: 2 seconds. Sells 100% at 11 gwei, slippage 0.
+              </small>
+            </label>
+          </div>
+          <!-- Only visible when BNB is selected -->
+          <div id="sn-mode-container" style="margin-top: 6px;">
+            <label for="sn-mode" style="font-weight: 500; display:block;">BNB Route Mode</label>
+            <select id="sn-mode" style="width:100%; padding:4px; border-radius:6px; border:1px solid #444;">
+              <option value="pancake" selected>Graduated (PancakeSwap)</option>
+              <option value="four">Four.meme bonding curve (ungraduated)</option>
+              <option value="binance-exclusive">Binance-exclusive router</option>
+              <option value="auto">Auto (detect)</option>
+            </select>
+            <small style="color: #999;">
+              Applies only to BNB trades. Solana ignores this setting.
+            </small>
+          </div>
+
+          <label class="lbl">Raydium CA (optional Sol-only override):
+            <input id="sn-raydiumca" class="inp" type="text" placeholder="leave blank for auto" />
+            <small style="opacity:0.7;font-size:11px;">
+              If chain = Sol, we'll force this Raydium pool instead of auto routing.
+              Ignored for BNB.
+            </small>
+          </label>
+
+ 
+
+
+          <label class="lbl">Slippage %:
+            <input id="sn-slippage" class="inp" type="number" step="0.1" value="0" />
+            <small style="opacity:0.7;font-size:11px;">
+              BNB: 0 means no minOut guard.<br/>
+              SOL: use high slippage (40–60) or swaps will fail.
+            </small>
+          </label>
+
+          <label class="lbl">Deadline (seconds):
+            <input id="sn-deadline" class="inp" type="number" value="1200" />
+          </label>
+        </div>
+      </details>
+
+      <div style="margin-top:12px;">
+        <button id="sn-add" class="btn btn-primary">Add Sniper Order</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Orders Panel -->
+  <section class="panel" id="panel-orders">
+    <div class="card">
+      <div class="row between" style="margin-bottom:12px;">
+        <h2 class="h2" style="margin:0;">Orders</h2>
+        <div style="display:flex;gap:8px;">
+          <button id="btnToggleNightMode" class="btn" title="Toggle night mode for all orders">🌙 Toggle All Night Mode</button>
+          <button id="btnRefreshOrders" class="btn">Refresh</button>
+        </div>
+      </div>
+      <div id="ordersList">No orders</div>
+    </div>
+  </section>
+
+  <!-- Settings Panel -->
+  <section class="panel" id="panel-settings">
+    <div class="card">
+      <h2 class="h2">Signer Settings</h2>
+      <label class="lbl">Signer Endpoint:
+        <input id="set-signer" class="inp" placeholder="http://127.0.0.1:8787/swap" />
+      </label>
+      <label class="lbl">API Token (optional):
+        <input id="set-token" class="inp" type="password" placeholder="x-api-token" />
+      </label>
+
+      <!-- Signer #2 API Token (wallet #2) - ADDED -->
+      <label class="lbl">API Token (wallet #2, optional):
+        <input id="set-token-2" class="inp" type="password" placeholder="x-api-token-2" />
+        <small style="opacity:0.7;font-size:11px">
+          Optional token for the hardcoded second signer at http://127.0.0.1:8788/swapSol
+        </small>
+      </label>
+      <!-- End Signer #2 API Token -->
+
+      <label class="lbl">Default Gas (gwei):
+        <input id="set-gas" class="inp" type="number" step="0.1" value="3" />
+      </label>
+
+      <div style="margin-top:12px;">
+        <button id="btnSaveSettings" class="btn btn-primary">Save</button>
+      </div>
+
+      <h3 style="margin-top:20px;color:#89f;font-size:14px;">⚡ Performance Optimizations</h3>
+      <div style="background:#0f1218;border:1px solid #2a3846;border-radius:8px;padding:10px;margin-top:8px;font-size:12px;opacity:0.85;">
+        <p style="margin:0 0 8px 0;">Your signer uses these optimizations automatically:</p>
+        <ul style="margin:0;padding-left:20px;">
+          <li>Cached gas / fee</li>
+          <li>Local nonce mgmt (BNB)</li>
+          <li>Fixed gas limit (300k default)</li>
+          <li>Multi-endpoint broadcast racing</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Debug Panel -->
+  <section class="panel" id="panel-debug">
+    <div class="card">
+      <h2 class="h2">Toaster Debug</h2>
+      <div class="row gap" style="margin-bottom:8px;">
+        <button id="btnDebugRefresh" class="btn">Refresh Debug</button>
+        <label class="lbl row" style="margin:0;align-items:center;">
+          <input id="autoRefreshDebug" type="checkbox" class="chk" />
+          <span style="margin-left:8px">auto-refresh</span>
+        </label>
+      </div>
+      <pre id="logDebug" class="log" style="min-height:180px;"></pre>
+    </div>
+  </section>
+
+  <script src="timing-system.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

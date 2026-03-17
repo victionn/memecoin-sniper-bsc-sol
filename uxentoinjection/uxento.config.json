@@ -1,0 +1,40 @@
+{
+  "defaults": {
+    "includeLinks": true,
+    "debug": {
+      "flashInjected": true,
+      "logToConsole": true,
+      "addDataAttrs": true
+    }
+  },
+  "profiles": {
+    "tweet": {
+      "name": "Daily Express",
+      "handle": "Daily_Express",
+      "body": "James Wade emotionally dedicated his victory over Luke Littler to his young son.",
+      "statusId": "1982496104064102801"
+    },
+    "reply": {
+      "name": "Daily Express",
+      "handle": "Daily_Express",
+      "body": "Huge respect to both players — what a match!",
+      "statusId": "",
+      "targetId": "1982496000000000000"
+    },
+    "quote": {
+      "name": "Sports Desk",
+      "handle": "SportsDesk",
+      "body": "Context matters — here’s the clip everyone is talking about.",
+      "statusId": "",
+      "targetId": "1982495000000000000"
+    },
+    "retweet": {
+      "name": "Darts Updates",
+      "handle": "DartsUpdates",
+      "body": "RT for visibility.",
+      "statusId": "",
+      "targetId": "1982494000000000000",
+      "ribbonText": "Retweeted"
+    }
+  }
+}
