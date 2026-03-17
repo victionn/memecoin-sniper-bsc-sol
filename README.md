@@ -5,9 +5,6 @@ A low-latency, event-driven trading system designed to detect early signals from
 ---
 
 ## Overview
-
-This project was built to explore how **latency, signal detection, and execution speed** affect outcomes in highly volatile markets like memecoins.
-
 The system monitors tweet activity from key accounts, extracts relevant signals using keyword and image-based heuristics, and automatically executes trades within milliseconds of detection.
 
 ---
