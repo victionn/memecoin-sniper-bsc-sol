@@ -51,7 +51,7 @@ npm start
 - Now you're ready to snipe! Type in heuristics, keywords or authors that may be bullish for a memecoin. Select the chain (BNB/SOL) and save. Infinite amount of orders can be processed but the more orders there are, the slower the processing for matching.
 <img width="565" height="856" alt="image" src="https://github.com/user-attachments/assets/e21b4828-a639-485a-aa64-6a1264416937" />
 
-##Advanced Settings
+## Advanced Settings
 - Night mode: Automatically sell your position after x seconds defined by you.
 - Multi buy: Buy on multiple wallets
 - Slippage: Mainly used to prevent MEVs with high gas fees, set the maximum price movement you are willing to accept before the trade executes
