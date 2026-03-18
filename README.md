@@ -51,6 +51,10 @@ npm start
 - Now you're ready to snipe! Type in heuristics, keywords or authors that may be bullish for a memecoin. Select the chain (BNB/SOL) and save. Infinite amount of orders can be processed but the more orders there are, the slower the processing for matching.
 <img width="565" height="856" alt="image" src="https://github.com/user-attachments/assets/e21b4828-a639-485a-aa64-6a1264416937" />
 
+- Once a snipe has successfully transacted, a full breakdown of the timing should be found in your signer console 
+<img width="1240" height="548" alt="image" src="https://github.com/user-attachments/assets/96c92aca-6899-495a-b7e2-221886ed9fc9" />
+
+
 ## Advanced Settings
 - Night mode: Automatically sell your position after x seconds defined by you.
 - Multi buy: Buy on multiple wallets
