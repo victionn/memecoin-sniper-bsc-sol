@@ -40,6 +40,7 @@ The system monitors tweet activity from key accounts, extracts relevant signals 
 
 - Open app.uxento.io, the twitter API the system will use to extract tweets in real time. You should see new tweets come up as a toast on the bottom right, meaning they are processed by the sniper. 
 <img width="2375" height="1115" alt="image" src="https://github.com/user-attachments/assets/0be71cc1-d9b9-4281-8f73-295c8d7c7b86" />
+
 - Now open PowerShell and navigate to your signer(s) folder. Run:
 
 ```bash
