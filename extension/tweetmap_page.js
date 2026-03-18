@@ -502,29 +502,60 @@ if (tType === 'RETWEET') {
   })();
 
   // ---- Hook console for Ably "CT_Tracker5 decrypted" ----
-  function interceptConsole(methodName, origFn) {
-    return function (...args) {
-      try {
-        const label = args[0];
-        if (typeof label === 'string' && label.includes('[Ably] CT_Tracker5 decrypted')) {
-          const payload = args[1];
+// ---- Hook console for Ably + NotiSound (NEW) ----
+function interceptConsole(methodName, origFn) {
+  return function (...args) {
+    try {
+      const label = args[0];
+      const payload = args[1];
+
+      if (typeof label === 'string') {
+
+        // 🔹 OLD: direct Ably decrypted logs
+        if (
+          label.includes('[Ably]') &&
+          label.includes('CT_Tracker5') &&
+          label.includes('decrypted')
+        ) {
           debugState.ablyIntercepts++;
-          dbg('Ably decrypted intercept', { payloadPreview: payload });
-          // Scan the payload as tweet-like data
+          dbg('Ably decrypted intercept', { label, payload });
           scanForTweets(payload, 'ably:CT_Tracker5');
         }
-      } catch (e) {
-        debugState.lastErrors.push({
-          where: 'console.' + methodName,
-          error: String(e)
-        });
+
+        // 🔹 NEW: NotiSound pipeline (THIS IS YOUR FIX)
+        if (
+          label.includes('[NotiSound] playNotification called') &&
+          label.includes('source: CT_Tracker5')
+        ) {
+          debugState.ablyIntercepts++;
+          dbg('NotiSound CT_Tracker5 intercept', { payload });
+          scanForTweets(payload, 'notisound:CT_Tracker5');
+        }
+
+        // 🔹 OPTIONAL: catch AI-DBG too (extra safety)
+        if (
+          label.includes('[AI-DBG]') &&
+          payload &&
+          typeof payload === 'object'
+        ) {
+          debugState.ablyIntercepts++;
+          dbg('AI-DBG intercept', { payload });
+          scanForTweets(payload, 'aidbg');
+        }
       }
-      return origFn(...args);
-    };
-  }
 
-  console.debug = interceptConsole('debug', origConsoleDebug);
-  console.log = interceptConsole('log', origConsoleLog);
+    } catch (e) {
+      debugState.lastErrors.push({
+        where: 'console.' + methodName,
+        error: String(e)
+      });
+    }
 
+    return origFn(...args);
+  };
+}
+
+console.debug = interceptConsole('debug', origConsoleDebug);
+console.log = interceptConsole('log', origConsoleLog);
   dbg('hook install finished; tweetMap + debug state exposed on window');
 })();
