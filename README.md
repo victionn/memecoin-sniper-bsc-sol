@@ -27,8 +27,16 @@ The system monitors tweet activity from key accounts, extracts relevant signals 
 - **Browser Extension UI**
   - Displays detected signals and trade status in real time
   - Allows quick configuration and monitoring
-
 ---
+
+
+## Installation and Setup
+
+- Go into extension on your browset and load the extension folder in. 
+<img width="1504" height="788" alt="image" src="https://github.com/user-attachments/assets/cfc739a9-b532-4305-8411-ac82f92adcd5" />
+
+- 
+- 
 
 ## Architecture (High Level)
 
