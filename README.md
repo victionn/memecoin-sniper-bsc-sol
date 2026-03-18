@@ -13,10 +13,10 @@ The system monitors tweet activity from key accounts, extracts relevant signals 
 
 - **Real-time Signal Detection**
   - Monitors tweets from selected KOLs (Key Opinion Leaders)
-  - Uses keyword matching and basic image heuristics to identify potential launches
+  - Uses keyword matching and basic image heuristics to identify potential bullish signals
 
 - **Automated Trade Execution**
-  - Executes transactions on **BSC and Solana**
+  - Executes transactions on BNB and Solana
   - Supports multi-wallet and parallel execution paths
 
 - **Low Latency Infrastructure**
@@ -53,8 +53,7 @@ The system monitors tweet activity from key accounts, extracts relevant signals 
 
 - ~30ms average execution latency  
 - ~11ms best case  
-- Achieved same-block inclusion under competitive gas conditions  
-- 18 automated trades executed (Nov 2025 – Jan 2026)
+- Achieved same-block inclusion under highly competitive fills
 
 ---
 
