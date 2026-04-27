@@ -1,5 +1,4 @@
 // content_bridge.js - Bridge between MAIN world and service worker
-// This runs in ISOLATED world and has chrome.runtime access
 
 console.log('[bridge] 🚀 ISOLATED world bridge loaded');
 
