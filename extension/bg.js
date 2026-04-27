@@ -1,6 +1,4 @@
 // bg.js — service worker for rules, orders, and buy execution
-// OPTIMIZED VERSION - parallel processing, batched storage, cached normalizations
-// WITH PERFORMANCE TIMING SYSTEM
 
 // ⚡ PRODUCTION MODE: Set to true to disable ALL logging and save ~10-20ms per snipe
 const PRODUCTION_MODE = true;  // Set to true for production (disables all logs)
