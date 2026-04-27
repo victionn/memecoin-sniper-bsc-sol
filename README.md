@@ -32,7 +32,7 @@ The system monitors tweet activity from key accounts, extracts relevant signals 
 
 ## Installation and Setup
 
-- Go into extension on your browset and load the extension folder in. 
+- Go into extension on your browser and load the extension folder in. 
 <img width="1504" height="788" alt="image" src="https://github.com/user-attachments/assets/cfc739a9-b532-4305-8411-ac82f92adcd5" />
 
 - In the extension, go into settings and enter the API keys for your respective signers. Second one is optional and for bundle purchases.
