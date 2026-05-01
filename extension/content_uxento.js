@@ -1,13 +1,6 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // content_uxento_v2.js - Uxento Tweet Monitor (Ably-first architecture)
 // ═══════════════════════════════════════════════════════════════════════════════
-// V2 Changes:
-// - Ably (__uxentoTweetMap) as SINGLE SOURCE OF TRUTH for author/body/refUrls
-// - Removed all retry logic (waitForBetterBody, rescanQuoteLater, etc.)
-// - Removed old HTML layout detection - simplified DOM extraction
-// - Removed image extraction logic - hasImage always false
-// - Kept: timings, toasts, audio, bg.js contract, deduplication
-// ═══════════════════════════════════════════════════════════════════════════════
 
 (() => {
 'use strict';
@@ -185,7 +178,6 @@ function extractTweetIdFromCard(card) {
   
   ids.sort((a, b) => Number(b) - Number(a));
   
-  // ✅ NEW: Check if any ID was recently retweeted (within last 5 seconds)
   const now = Date.now();
   for (const id of ids) {
     const entry = tweetMapService.getById(id);
@@ -263,7 +255,7 @@ class CardTimer {
     
     const total = (this.timestamps[finalLabel] - this.start).toFixed(1);
     
-    console.log(`[⏱️ PERF] ${this.cardKey.slice(0, 30)}... | Total: ${total}ms`, {
+    console.log(`[PERF] ${this.cardKey.slice(0, 30)}... | Total: ${total}ms`, {
       breakdown,
       timestamps: Object.keys(this.timestamps).reduce((acc, key) => {
         acc[key] = `+${(this.timestamps[key] - this.start).toFixed(1)}ms`;
@@ -368,7 +360,7 @@ function shouldSendToBg(tweetUrl) {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 async function notifyBackground(payload) {
-  console.log('[uxento-v2] 🚨 notifyBackground called with:', {
+  console.log('[uxento-v2] notifyBackground called with:', {
     handle: payload.handle,
     tweetType: payload.tweetType,
     statusUrl: payload.statusUrl,
@@ -381,7 +373,7 @@ async function notifyBackground(payload) {
     return;
   }
   
-  console.log('[uxento-v2] ✅ Passed dedupe check');
+  console.log('[uxento-v2] Passed dedupe check');
   
   try {
     const messageToSend = { 
@@ -393,9 +385,9 @@ async function notifyBackground(payload) {
     
     window.postMessage(messageToSend, '*');
     
-    console.log('[uxento-v2] ✅ Message posted to bridge successfully');
+    console.log('[uxento-v2] Message posted to bridge successfully');
   } catch (e) {
-    console.error('[uxento-v2] ❌ notifyBackground error:', e);
+    console.error('[uxento-v2] notifyBackground error:', e);
     debug('notifyBackground error:', e);
   }
 }
@@ -743,14 +735,13 @@ if (needsReferenceUrl && !referenceUrl) {
   
   debug('Resuming processing for:', tweetId);
   
-  // ✅ RE-FETCH updated data from tweetMap
   const updatedData = tweetMapService.getById(tweetId);
   referenceUrl = tweetMapService.getReferenceUrl(updatedData);
   
   if (referenceUrl) {
-    debug('✅ Reference URL found after wait:', referenceUrl);
+    debug('Reference URL found after wait:', referenceUrl);
   } else {
-    debug('⚠️ Reference URL still missing after wait');
+    debug('Reference URL still missing after wait');
   }
 }
 
@@ -870,7 +861,7 @@ if (referenceUrl) {
   cardTimers.delete(card);
 
   markProcessed(card);
-  debug('✅ Card processed successfully:', tweetId);
+  debug('Card processed successfully:', tweetId);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
