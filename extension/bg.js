@@ -1,9 +1,9 @@
 // bg.js — service worker for rules, orders, and buy execution
 
-// ⚡ PRODUCTION MODE: Set to true to disable ALL logging and save ~10-20ms per snipe
+// PRODUCTION MODE: Set to true to disable ALL logging and save ~10-20ms per snipe
 const PRODUCTION_MODE = true;  // Set to true for production (disables all logs)
 
-// ⚡ VERBOSE TIMING: Set to false to disable detailed timing logs (but keep critical logs)
+// VERBOSE TIMING: Set to false to disable detailed timing logs (but keep critical logs)
 const VERBOSE_TIMING = true;  // Set to false to disable timing logs
 
 // Logging functions with zero overhead in production mode
@@ -20,7 +20,7 @@ const IF_DEBUG = (fn) => { if (!PRODUCTION_MODE) fn(); };
 const IF_TIMING = (fn) => { if (!PRODUCTION_MODE && VERBOSE_TIMING) fn(); };
 
 // ════════════════════════════════════════════════════════════════
-// 🚀 ORDER CACHE - Eliminates 17ms storage read per tweet
+// ORDER CACHE - Eliminates 17ms storage read per tweet
 // ════════════════════════════════════════════════════════════════
 let ordersCache = null;
 let ordersCacheTime = 0;
@@ -38,7 +38,7 @@ function safeSendToPopup(payload) {
 }
 
 // ════════════════════════════════════════════════════════════════
-// 🔥 JSON PARSING WARMUP - Eliminates cold start penalty
+// JSON PARSING WARMUP - Eliminates cold start penalty
 // ════════════════════════════════════════════════════════════════
 
 /**
@@ -120,9 +120,9 @@ async function warmupJsonParsing() {
     JSON.parse('{}');
     
     const elapsed = performance.now() - start;
-    LOG(`🔥 JSON.parse warmed up in ${elapsed.toFixed(1)}ms`);
+    LOG(`JSON.parse warmed up in ${elapsed.toFixed(1)}ms`);
   } catch (e) {
-    LOG('⚠️ JSON warmup failed (non-critical):', e.message);
+    LOG('JSON warmup failed (non-critical):', e.message);
   }
 }
 
@@ -132,7 +132,7 @@ async function warmupJsonParsing() {
  */
 async function warmupFetchToSigner() {
   try {
-    LOG('🔥 Warming up fetch to signer...');
+    LOG('Warming up fetch to signer...');
     const start = performance.now();
     
     // Make a dummy request to warm up the connection
@@ -148,9 +148,9 @@ async function warmupFetchToSigner() {
     await testResponse.json();
     
     const elapsed = performance.now() - start;
-    LOG(`🔥 Fetch to signer warmed in ${elapsed.toFixed(1)}ms`);
+    LOG(`Fetch to signer warmed in ${elapsed.toFixed(1)}ms`);
   } catch (e) {
-    LOG('⚠️ Signer fetch warmup failed (non-critical):', e.message);
+    LOG('Signer fetch warmup failed (non-critical):', e.message);
   }
 }
 
@@ -159,7 +159,7 @@ warmupJsonParsing().catch(e => LOG('JSON warmup error:', e));
 warmupFetchToSigner().catch(e => LOG('Fetch warmup error:', e));
 
 // ═══════════════════════════════════════════════════════════════
-// 💧 SLIPPAGE PROTECTION - Get Expected Tokens from PancakeSwap
+// SLIPPAGE PROTECTION - Get Expected Tokens from PancakeSwap
 // ═══════════════════════════════════════════════════════════════
 
 /**
@@ -170,7 +170,7 @@ warmupFetchToSigner().catch(e => LOG('Fetch warmup error:', e));
  * @returns {Promise<string|null>} Expected tokens as string, or null on error
  */
 // ═══════════════════════════════════════════════════════════════
-// 🚀 WebSocket Client for Ultra-Low Latency (~2-3ms vs ~18ms HTTP)
+// WebSocket Client for Ultra-Low Latency (~2-3ms vs ~18ms HTTP)
 // ═══════════════════════════════════════════════════════════════
 
 class SignerWebSocket {
@@ -200,7 +200,7 @@ class SignerWebSocket {
         this.everConnected = true;
         this.reconnectAttempts = 0;
         this.lastPong = Date.now();
-        LOG('🔌 ✅ WebSocket connected to signer');
+        LOG('🔌 WebSocket connected to signer');
         
         // Start keepalive pings to prevent idle disconnection
         this.startPing();
@@ -229,7 +229,7 @@ class SignerWebSocket {
             this.pendingRequests.delete(response.id);
           }
         } catch (e) {
-          LOG('⚠️ WebSocket parse error:', e.message);
+          LOG('WebSocket parse error:', e.message);
         }
       };
       
@@ -241,7 +241,7 @@ class SignerWebSocket {
         
         // Only log disconnection if we were previously connected
         if (this.everConnected) {
-          LOG('🔌 ❌ WebSocket disconnected');
+          LOG('WebSocket disconnected');
         }
         
         // Auto-reconnect with exponential backoff
@@ -251,14 +251,14 @@ class SignerWebSocket {
           
           // Only log reconnection attempts if we were previously connected
           if (this.everConnected) {
-            LOG(`🔌 Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts})...`);
+            LOG(`Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts})...`);
           }
           
           setTimeout(() => this.connect(), delay);
         } else {
           // Only log max attempts if we were previously connected (otherwise it's just not available)
           if (this.everConnected) {
-            LOG('🔌 ❌ Max reconnect attempts reached. Falling back to HTTP.');
+            LOG('Max reconnect attempts reached. Falling back to HTTP.');
           }
         }
       };
@@ -266,12 +266,12 @@ class SignerWebSocket {
       this.ws.onerror = (err) => {
         // Only log errors if we were previously connected (otherwise it's just unavailable)
         if (this.everConnected) {
-          LOG('🔌 ❌ WebSocket error:', err.message);
+          LOG('WebSocket error:', err.message);
         }
       };
       
     } catch (e) {
-      LOG('🔌 ❌ Failed to create WebSocket:', e.message);
+      LOG('Failed to create WebSocket:', e.message);
     }
   }
   
@@ -293,7 +293,7 @@ class SignerWebSocket {
           
           // Set a timeout to detect if pong never comes back (5 seconds)
           this.pongTimeout = setTimeout(() => {
-            LOG('🔌 ⚠️ No pong received, connection may be dead');
+            LOG('No pong received, connection may be dead');
             // Close and reconnect
             if (this.ws) {
               this.ws.close();
@@ -301,12 +301,12 @@ class SignerWebSocket {
           }, 5000);
           
         } catch (e) {
-          LOG('🔌 ⚠️ Failed to send ping:', e.message);
+          LOG('Failed to send ping:', e.message);
         }
       }
     }, 30000); // Ping every 30 seconds
     
-    LOG('🔌 💓 Keepalive pings started (30s interval)');
+    LOG('Keepalive pings started (30s interval)');
   }
   
   stopPing() {
@@ -323,13 +323,13 @@ class SignerWebSocket {
   async swap(payload, chain = 'bnb') {
     // Check if WebSocket is available
     if (!this.isConnected || !this.ws || this.ws.readyState !== WebSocket.OPEN) {
-      LOG('⚠️ WebSocket not available, falling back to HTTP');
+      LOG('WebSocket not available, falling back to HTTP');
       throw new Error('WebSocket not connected');
     }
     
     const id = ++this.requestId;
     
-    // ⏱️ T0: Start timing
+    // T0: Start timing
     const t0 = performance.now();
     
     return new Promise((resolve, reject) => {
@@ -340,12 +340,12 @@ class SignerWebSocket {
         payload
       };
       
-      // ⏱️ T1: Stringify request
+      // T1: Stringify request
       const t1 = performance.now();
       const messageStr = JSON.stringify(message);
       const t2 = performance.now();
       
-      // ⏱️ T3: Send via WebSocket
+      // T3: Send via WebSocket
       this.ws.send(messageStr);
       const t3 = performance.now();
       
@@ -369,7 +369,7 @@ class SignerWebSocket {
         }
       }, 10000);
     }).then(response => {
-      // ⏱️ T4: Response received (in .then handler)
+      // T4: Response received (in .then handler)
       const t4 = performance.now();
       
       // Get the timing data that was attached in onmessage
@@ -454,19 +454,19 @@ setTimeout(async () => {
   // Test Wallet 1 WebSocket (required)
   const result = await signerWS.ping();
   if (result.ok) {
-    LOG(`🔌 Wallet 1 WebSocket ping: ${result.latency.toFixed(1)}ms`);
+    LOG(`Wallet 1 WebSocket ping: ${result.latency.toFixed(1)}ms`);
   } else {
-    LOG('🔌 ⚠️ Wallet 1 WebSocket ping failed - will use HTTP fallback');
+    LOG('Wallet 1 WebSocket ping failed - will use HTTP fallback');
   }
   
   // Test Wallet 2 WebSocket (optional)
   const result2 = await signerWS2.ping();
   if (result2.ok) {
     wallet2Available = true;
-    LOG(`🔌 Wallet 2 WebSocket ping: ${result2.latency.toFixed(1)}ms`);
+    LOG(`Wallet 2 WebSocket ping: ${result2.latency.toFixed(1)}ms`);
   } else {
     wallet2Available = false;
-    LOG('🔌 💡 Wallet 2 WebSocket not available (optional) - multi-buy will use HTTP for Wallet 2');
+    LOG('Wallet 2 WebSocket not available (optional) - multi-buy will use HTTP for Wallet 2');
   }
 }, 2000);
 
@@ -536,7 +536,7 @@ async function setSeen(m) {
 }
 
 // ════════════════════════════════════════════════════════════════
-// 🔄 CACHE SYNC - Keep cache in sync with storage changes
+// CACHE SYNC - Keep cache in sync with storage changes
 // ════════════════════════════════════════════════════════════════
 
 /**
@@ -552,7 +552,7 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
 });
 
 // ════════════════════════════════════════════════════════════════
-// 🆕 NEW: TIMING LOG TO SERVER
+// NEW: TIMING LOG TO SERVER
 // ════════════════════════════════════════════════════════════════
 
 /**
@@ -619,10 +619,10 @@ async function logTimingToServer(timingEvent) {
       signal: AbortSignal.timeout(2000) // 2s timeout, don't block buys
     });
     
-    LOG('✅ Timing logged to server:', timingEvent.breakdowns.total + 'ms');
+    LOG('Timing logged to server:', timingEvent.breakdowns.total + 'ms');
   } catch (err) {
     // Don't fail the buy if logging fails
-    LOG('⚠️ Failed to log timing to server:', err.message);
+    LOG('Failed to log timing to server:', err.message);
   }
 }
 
@@ -743,11 +743,11 @@ function matchesOrder(order, tweet) {
   // 1. tweetType must match if user specified a type
   if (orderTypeNorm) {
     if (orderTypeNorm !== tweetTypeNorm) {
-      const reason = `❌ Type mismatch: expected ${orderTypeNorm} vs ${tweetTypeNorm}`;
+      const reason = `Type mismatch: expected ${orderTypeNorm} vs ${tweetTypeNorm}`;
       LOG(reason);
       return { matched: false, reason };
     }
-    LOG("✅ tweetType matched:", orderTypeNorm);
+    LOG("tweetType matched:", orderTypeNorm);
   }
 
   // 2. author/@handle must match if user specified one
@@ -755,15 +755,15 @@ function matchesOrder(order, tweet) {
     const authorMatched = orderAuthors.some(author => author === tweetHandleNorm);
     
     if (!authorMatched) {
-      const reason = `❌ Author mismatch: expected one of [${orderAuthors.join(', ')}] vs ${tweetHandleNorm}`;
+      const reason = ` Author mismatch: expected one of [${orderAuthors.join(', ')}] vs ${tweetHandleNorm}`;
       return { matched: false, reason };
     }
-    LOG("✅ author matched:", tweetHandleNorm, "from list:", orderAuthors);
+    LOG("author matched:", tweetHandleNorm, "from list:", orderAuthors);
   }
 
   // 3. reference URL must match if user specified one
   if (orderRefUrls.length > 0) {
-    // ⚡ PERFORMANCE: Extract tweet ID once and compare IDs instead of full URLs
+    //PERFORMANCE: Extract tweet ID once and compare IDs instead of full URLs
     // This is much faster than comparing "https://www.x.com/i/web/status/1234567890"
     const tweetId = extractTweetId(tweet.contextUrl || '');
     
@@ -778,11 +778,11 @@ function matchesOrder(order, tweet) {
     });
     
     if (!urlMatched) {
-      const reason = `❌ Reference URL mismatch: expected one of [${orderRefUrls.join(', ')}] not in ${tweetCtxLower} (ID: ${tweetId})`;
+      const reason = `Reference URL mismatch: expected one of [${orderRefUrls.join(', ')}] not in ${tweetCtxLower} (ID: ${tweetId})`;
       LOG(reason);
       return { matched: false, reason };
     }
-    LOG("✅ referenceUrl matched:", tweetId || tweetCtxLower, "from list:", orderRefUrls);
+    LOG("referenceUrl matched:", tweetId || tweetCtxLower, "from list:", orderRefUrls);
   }
 
   // 4. content word logic
@@ -791,11 +791,11 @@ function matchesOrder(order, tweet) {
       // ALL words must appear
       const allPresent = wordsLower.every(word => tweetBodyLower.includes(word));
       if (!allPresent) {
-        const reason = `❌ Not all words present (AND): ${wordsLower.join(', ')}`;
+        const reason = `Not all words present (AND): ${wordsLower.join(', ')}`;
         LOG(reason);
         return { matched: false, reason };
       }
-      LOG("✅ all words matched (AND):", wordsLower);
+      LOG("all words matched (AND):", wordsLower);
     } else {
       // default OR
       const anyPresent = wordsLower.some(word => tweetBodyLower.includes(word));
@@ -804,11 +804,11 @@ function matchesOrder(order, tweet) {
         LOG(reason);
         return { matched: false, reason };
       }
-      LOG("✅ at least one word matched (OR):", wordsLower);
+      LOG("at least one word matched (OR):", wordsLower);
     }
   }
 
-  LOG("✅ ALL CHECKS PASSED - Order matched!");
+  LOG("ALL CHECKS PASSED - Order matched!");
   return { matched: true };
 }
 
@@ -841,7 +841,7 @@ async function sendPushcutNotification(order, tweet) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        title: "🎯 SlitSniper Match!",
+        title: "SlitSniper Match!",
         text: `${tweet.name || tweet.handle || 'Order'} matched on ${chain.toUpperCase()}`,
         defaultAction: {
           url: axiomUrl
@@ -925,7 +925,7 @@ async function postJson(url, body, apiToken) {
   
   // Log JSON parse time if it's unusually high (helps debug cold starts)
   if (jsonParseMs > 10) {
-    LOG(`⚠️ Slow JSON parse: ${jsonParseMs}ms (network: ${networkMs}ms)`);
+    LOG(`Slow JSON parse: ${jsonParseMs}ms (network: ${networkMs}ms)`);
   }
   
   return {
@@ -1001,7 +1001,7 @@ async function doManualBuy(msg, wsInstance = null) {
   const body = chain === 'sol' ? makeSolSwapBody(msg) : makeBnbSwapBody(msg);
   
   // ═══════════════════════════════════════════════════════════
-  // 🚀 Try WebSocket first (2-3ms), fallback to HTTP (18ms)
+  // Try WebSocket first (2-3ms), fallback to HTTP (18ms)
   // ═══════════════════════════════════════════════════════════
   
   // Use provided WebSocket instance or default to signerWS (Wallet 1)
@@ -1042,7 +1042,7 @@ async function doManualBuy(msg, wsInstance = null) {
     
   } catch (wsError) {
     // WebSocket failed, fallback to HTTP
-    LOG(`⚠️ WebSocket failed (${wsError.message}), falling back to HTTP`);
+    LOG(`WebSocket failed (${wsError.message}), falling back to HTTP`);
     
     if (chain === 'sol') {
       const url = root + "/swapSol";
@@ -1172,7 +1172,7 @@ async function autoBuyFromOrder(order, tweet, timingEvent) {
         sellAfterSeconds: o.sellAfterSeconds || null
       };
     } else {
-      // ⭐ BNB: Just pass slippage % to signer - signer will fetch quote and calculate minAmountOut
+      // BNB: Just pass slippage % to signer - signer will fetch quote and calculate minAmountOut
       const slippageValue = o.slippage ? Number(o.slippage) : 0;
       
       return {
@@ -1194,24 +1194,24 @@ async function autoBuyFromOrder(order, tweet, timingEvent) {
   };
 
   // ═══════════════════════════════════════════════════════════
-  // 🔥 CHECKPOINT 4: BUY STARTED - NETWORK TO SIGNER
+  // CHECKPOINT 4: BUY STARTED - NETWORK TO SIGNER
   // ═══════════════════════════════════════════════════════════
   const buyStartTime = Date.now();
   timingEvent.stages.buyStarted = buyStartTime;
 
   let buyResult;
   if (order.multiBuy) {
-    LOG(`📊 Multi-buy mode for ${order.amount} ${chain.toUpperCase()}`);
+    LOG(`Multi-buy mode for ${order.amount} ${chain.toUpperCase()}`);
     buyResult = await multiBuySolOrder(order, buildMsgForAmount);
   } else {
     const totalAmt = Number(order.amount);
     const msg = await buildMsgForAmount(order, totalAmt);
-    LOG(`📊 Single buy: ${totalAmt} ${chain.toUpperCase()} → ${order.ca?.substring(0, 10)}...`);
+    LOG(`Single buy: ${totalAmt} ${chain.toUpperCase()} → ${order.ca?.substring(0, 10)}...`);
     buyResult = await doManualBuy(msg, signerWS);  // Use Wallet 1 WebSocket
   }
 
   // ═══════════════════════════════════════════════════════════
-  // 🔥 CHECKPOINT 5: SIGNER RESPONDED
+  // CHECKPOINT 5: SIGNER RESPONDED
   // ═══════════════════════════════════════════════════════════
   const signerRespondedTime = Date.now();
   timingEvent.stages.signerResponded = signerRespondedTime;
@@ -1223,10 +1223,10 @@ async function autoBuyFromOrder(order, tweet, timingEvent) {
   timingEvent.breakdowns.networkFromSigner = 0;
   
   // Essential timing metrics
-  LOG(`📊 Network → Signer: ${timingEvent.breakdowns.networkToSigner}ms | Signer Processing: ${signerElapsedMs}ms`);
+  LOG(`Network → Signer: ${timingEvent.breakdowns.networkToSigner}ms | Signer Processing: ${signerElapsedMs}ms`);
 
   // ═══════════════════════════════════════════════════════════
-  // 🔥 CHECKPOINT 6: BUY CONFIRMED
+  // CHECKPOINT 6: BUY CONFIRMED
   // ═══════════════════════════════════════════════════════════
   const confirmedTime = Date.now();
   timingEvent.stages.buyConfirmed = {
@@ -1253,7 +1253,7 @@ async function autoBuyFromOrder(order, tweet, timingEvent) {
   });
   
   logTimingToServer(timingEvent).catch(err => {
-    LOG('⚠️ Non-blocking server log error:', err);
+    LOG('Non-blocking server log error:', err);
   });
 
   return buyResult;
@@ -1271,7 +1271,7 @@ async function armSpecialWatcherFromOrder(order, tweet, timingEvent) {
   }
 
   // ═══════════════════════════════════════════════════════════
-  // 🔥 CHECKPOINT 5: BUY SENT (t4)
+  // CHECKPOINT 5: BUY SENT (t4)
   // ═══════════════════════════════════════════════════════════
   timingEvent.stages.buySent = Date.now();
   
@@ -1294,7 +1294,7 @@ async function armSpecialWatcherFromOrder(order, tweet, timingEvent) {
     try { json = await res.json(); } catch { json = null; }
 
     // ═══════════════════════════════════════════════════════════
-    // 🔥 CHECKPOINT 6: BUY CONFIRMED (t5)
+    // CHECKPOINT 6: BUY CONFIRMED (t5)
     // ═══════════════════════════════════════════════════════════
     const success = res.ok && (!json || json.ok !== false);
     
@@ -1310,14 +1310,14 @@ async function armSpecialWatcherFromOrder(order, tweet, timingEvent) {
     timingEvent.breakdowns.confirmation = confirmedTime - timingEvent.stages.buySent;
     timingEvent.breakdowns.total = confirmedTime - timingEvent.stages.tweetDetected;
 
-    // 🔥 SEND COMPLETE TIMING EVENT TO POPUP
+    // SEND COMPLETE TIMING EVENT TO POPUP
     safeSendToPopup({
       type: 'timing_event',
       event: timingEvent
     });
-    // 🆕 ALSO SEND TO SERVER FOR PERSISTENT LOGGING
+    // ALSO SEND TO SERVER FOR PERSISTENT LOGGING
     logTimingToServer(timingEvent).catch(err => {
-      LOG('⚠️ Non-blocking server log error:', err);
+      LOG('Non-blocking server log error:', err);
     });
 
     if (!success) {
@@ -1330,7 +1330,7 @@ async function armSpecialWatcherFromOrder(order, tweet, timingEvent) {
       };
     }
 
-    LOG("✅ Armed special BNB watcher via /special-buy", {
+    LOG("Armed special BNB watcher via /special-buy", {
       amountBNB,
       gasGwei,
       elapsedMs,
@@ -1363,10 +1363,10 @@ async function armSpecialWatcherFromOrder(order, tweet, timingEvent) {
       type: 'timing_event',
       event: timingEvent
     });
-    // 🆕 ALSO SEND TO SERVER FOR PERSISTENT LOGGING
+    // ALSO SEND TO SERVER FOR PERSISTENT LOGGING
     logTimingToServer(timingEvent).catch(() => {});
     
-    LOG("❌ Failed to arm special watcher", msg);
+    LOG("Failed to arm special watcher", msg);
     return {
       ok: false,
       error: msg,
@@ -1393,7 +1393,7 @@ async function processOrderMatch(order, idx, tweet, seenMap, timingEvent) {
   }
 
   // ═══════════════════════════════════════════════════════════
-  // 🔥 CHECKPOINT 4: ORDER MATCHED (t3)
+  // CHECKPOINT 4: ORDER MATCHED (t3)
   // ═══════════════════════════════════════════════════════════
   const matchedTime = Date.now();
   timingEvent.stages.orderMatched = {
@@ -1410,7 +1410,7 @@ async function processOrderMatch(order, idx, tweet, seenMap, timingEvent) {
   timingEvent.metadata.chain = order.chain || 'bnb';
 
   // Match found!
-  CRITICAL_LOG("✅ MATCHED ORDER", { idx, order });
+  CRITICAL_LOG("MATCHED ORDER", { idx, order });
 
   // Fire notifications in parallel (non-blocking)
 
@@ -1418,25 +1418,25 @@ async function processOrderMatch(order, idx, tweet, seenMap, timingEvent) {
   let buyResult;
   try {
     if (order.specialBuy) {
-      LOG("⚡ Special buy enabled; arming BNB watcher instead of direct CA buy", { idx, order });
+      LOG("Special buy enabled; arming BNB watcher instead of direct CA buy", { idx, order });
       buyResult = await armSpecialWatcherFromOrder(order, tweet, timingEvent);
     } else {
-      LOG("🚀 Executing auto-buy for order", idx);
+      LOG("Executing auto-buy for order", idx);
       buyResult = await autoBuyFromOrder(order, tweet, timingEvent);
     }
 
-    CRITICAL_LOG("💸 auto-buy result:", buyResult);
+    CRITICAL_LOG("auto-buy result:", buyResult);
 triggerNotifications(order, tweet);
     let summary;
     if (buyResult.ok) {
       if (order.specialBuy) {
-        summary = `MATCH ✅ special watcher armed ⏱️${timingEvent.breakdowns.total}ms`;
+        summary = `MATCH special watcher armed ${timingEvent.breakdowns.total}ms`;
       } else {
         const txid = buyResult.hash || buyResult.sig || '(no txid)';
-        summary = `MATCH ✅ bought tx=${txid} ⏱️${timingEvent.breakdowns.total}ms`;
+        summary = `MATCH bought tx=${txid} ${timingEvent.breakdowns.total}ms`;
       }
     } else {
-      summary = `MATCH ❌ buy failed: ${buyResult.error || 'unknown error'} ⏱️${timingEvent.breakdowns.total}ms`;
+      summary = `MATCH buy failed: ${buyResult.error || 'unknown error'} ${timingEvent.breakdowns.total}ms`;
     }
 
     safeSendToPopup({
@@ -1448,7 +1448,7 @@ triggerNotifications(order, tweet);
     return { matched: true, summary, needsSeenUpdate: true };
 
   } catch (e) {
-    const summary = `MATCH ❌ threw error: ${String(e)}`;
+    const summary = `MATCH threw error: ${String(e)}`;
     LOG(`Order ${idx}: ${summary}`);
 
     safeSendToPopup({
@@ -1466,7 +1466,7 @@ async function processTweetForSniper(tweet, timingEvent) {
   LOG("processTweetForSniper got tweet:", tweet);
 
   // ═══════════════════════════════════════════════════════════
-  // 🔥 CHECKPOINT 3: MATCHING STARTED (t2)
+  // CHECKPOINT 3: MATCHING STARTED (t2)
   // ═══════════════════════════════════════════════════════════
 
   const matchingStartTime = Date.now();
@@ -1489,7 +1489,7 @@ async function processTweetForSniper(tweet, timingEvent) {
   const updatedOrders = orders.map((order, i) => {
     const result = results[i];
     if (result.status === 'fulfilled') {
-      // ⭐ Auto-pause order if it matched
+      // Auto-pause order if it matched
       const shouldPause = result.value.matched;
       
       if (shouldPause) {
@@ -1553,7 +1553,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       const tweetReceivedTime = Date.now();
 
       // ═══════════════════════════════════════════════════════════
-      // 🔥 CHECKPOINT 1: TWEET DETECTED (t0)
+      // CHECKPOINT 1: TWEET DETECTED (t0)
       // ═══════════════════════════════════════════════════════════
       const timingEvent = {
         id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -1574,7 +1574,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       }
 
       // ═══════════════════════════════════════════════════════════
-      // 🔥 CHECKPOINT 2: TWEET PARSED (t1)
+      // CHECKPOINT 2: TWEET PARSED (t1)
       // ═══════════════════════════════════════════════════════════
       const parsedTime = Date.now();
       timingEvent.stages.tweetParsed = parsedTime;
@@ -1609,7 +1609,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       try {
         const start = performance.now();
         
-        // ⭐ Signer will fetch expectedTokens if slippage is set (no need to do it here)
+        // Signer will fetch expectedTokens if slippage is set (no need to do it here)
         const buyResult = await doManualBuy(msg, signerWS);  // Use Wallet 1 WebSocket
         const end = performance.now();
 
@@ -1728,12 +1728,12 @@ async function startHeartbeat() {
       });
       
       if (response.ok) {
-        LOG('[Heartbeat] ✅ Signer warm');
+        LOG('[Heartbeat] Signer warm');
       } else {
-        LOG('[Heartbeat] ⚠️ Signer response:', response.status);
+        LOG('[Heartbeat] Signer response:', response.status);
       }
     } catch (e) {
-      LOG('[Heartbeat] ❌ Failed:', e.message);
+      LOG('[Heartbeat] Failed:', e.message);
     }
   }, 45000); // Every 45 seconds
   
