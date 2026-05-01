@@ -1,6 +1,6 @@
 // content_bridge.js - Bridge between MAIN world and service worker
 
-console.log('[bridge] 🚀 ISOLATED world bridge loaded');
+console.log('[bridge] ISOLATED world bridge loaded');
 
 // Listen for messages from MAIN world (content_uxento.js)
 window.addEventListener('message', async (event) => {
@@ -10,9 +10,9 @@ window.addEventListener('message', async (event) => {
   const msg = event.data;
   if (!msg || msg.type !== 'UXENTO_TO_BRIDGE') return;
 
-  console.log('[bridge] 📨 Received from MAIN world:', msg);
-  console.log('[bridge] 📦 Payload type:', msg.payload?.type);
-  console.log('[bridge] 📝 Payload data:', msg.payload?.payload);
+  console.log('[bridge] Received from MAIN world:', msg);
+  console.log('[bridge] Payload type:', msg.payload?.type);
+  console.log('[bridge] Payload data:', msg.payload?.payload);
 
   // Forward to service worker
   try {
@@ -21,18 +21,18 @@ window.addEventListener('message', async (event) => {
       return;
     }
 
-    console.log('[bridge] 🚀 Sending to service worker:', msg.payload);
+    console.log('[bridge] Sending to service worker:', msg.payload);
     const response = await chrome.runtime.sendMessage(msg.payload);
     
     
-    console.log('[bridge] ✅ Service worker response:', response);
+    console.log('[bridge] Service worker response:', response);
   } catch (e) {
     // Silently ignore extension context invalidation errors
     if (e.message?.includes('Extension context invalidated')) {
       console.debug('[bridge] Extension context invalidated - extension may have reloaded');
     } else {
-      console.error('[bridge] ❌ Failed to send to service worker:', e);
-      console.error('[bridge] ❌ Error details:', {
+      console.error('[bridge] Failed to send to service worker:', e);
+      console.error('[bridge] Error details:', {
         message: e.message,
         stack: e.stack,
         name: e.name
@@ -43,7 +43,7 @@ window.addEventListener('message', async (event) => {
 
 // Also handle requests from service worker (for popup debug, etc.)
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-  console.log('[bridge] 📨 Received from service worker:', msg);
+  console.log('[bridge] Received from service worker:', msg);
 
   if (msg.type === 'get_latest_toasts' || msg.type === 'get_snapshot_now') {
     // Forward to MAIN world
@@ -70,4 +70,4 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   return true;
 });
 
-console.log('[bridge] ✅ Bridge ready and listening');
+console.log('[bridge] Bridge ready and listening');
