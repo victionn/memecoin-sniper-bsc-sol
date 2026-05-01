@@ -1,10 +1,4 @@
 // popup.js — orchestrates UI + talks to bg
-// This version includes:
-// - chain-aware slippage auto logic (Solana gets high default, BNB gets 0 default)
-// - buildBuyMessage() with per-chain defaults
-// - full buy / dry run / signer health / sniper / debug / orders logic
-// - UXento integration hooks
-//
 // Notes:
 // - Assumes popup.html defines all the elements referenced by #id
 // - Assumes bg.js implements message types: get_settings, set_settings, manual_buy, etc.
@@ -542,7 +536,7 @@ if (BTN_BUY) {
           elapsedMs: res.elapsedMs,
           timing: res.timing
         });
-        logBuy(`⏰ CHECK BSCSCAN / SOLSCAN: Compare ${new Date(clickTime).toISOString()} with block timestamp`);
+        logBuy(`CHECK BSCSCAN / SOLSCAN: Compare ${new Date(clickTime).toISOString()} with block timestamp`);
       }
     } else {
       logBuy({ ok:false, error:res?.error || 'Unknown error' });
@@ -700,17 +694,17 @@ chrome.runtime.onMessage.addListener((msg, sender) => {
   (async () => {
     // SNIPER FIRED NOTIFICATION
     if (msg?.type === 'sniper_fired') {
-      logBuy("🚨 SNIPER TRIGGERED 🚨");
+      logBuy("SNIPER TRIGGERED");
       if (msg.gmgnUrl)   logBuy("GMGN URL: " + String(msg.gmgnUrl));
       if (msg.token)     logBuy("Token: " + String(msg.token));
 
       if (msg.result) {
         const r = msg.result;
         if (r.ok) {
-          logBuy("✅ Buy succeeded: " + (r.hash || r.sig || 'sent'));
+          logBuy("Buy succeeded: " + (r.hash || r.sig || 'sent'));
           if (r.elapsedMs) logBuy(`⏱ Execution time: ${r.elapsedMs}ms`);
         } else {
-          logBuy("❌ Buy failed: " + (r.error || 'unknown error'));
+          logBuy("Buy failed: " + (r.error || 'unknown error'));
           logBuy(r);
         }
       }
@@ -761,7 +755,7 @@ chrome.runtime.onMessage.addListener((msg, sender) => {
       return;
     }
 
-    // 🔴 NEW: sniper_eval_result -> update Orders tab
+    // NEW: sniper_eval_result -> update Orders tab
     if (msg?.type === 'sniper_eval_result') {
       try {
         const idx = msg.idx;
@@ -1012,7 +1006,7 @@ params.push(`Night Mode: ${night}`);
       <div style="margin-top:6px;">
         <button class="order-pause btn"> ${order.paused ? 'Resume' : 'Pause'} </button>
         <button class="order-nightmode btn" title="Toggle night mode for this order">
-          🌙 ${order.nightMode ? 'ON' : 'OFF'}
+          ${order.nightMode ? 'ON' : 'OFF'}
         </button>
         <button class="order-edit btn">Edit</button>
         <button class="order-remove btn">Remove</button>
