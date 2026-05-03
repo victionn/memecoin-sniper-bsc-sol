@@ -27,11 +27,11 @@ import {
 import http from 'http';
 import https from 'https';
 // ═══════════════════════════════════════════════════════════════
-// 🚀 WebSocket for ultra-low latency (~2ms vs ~18ms HTTP)
+// WebSocket for ultra-low latency (~2ms vs ~18ms HTTP)
 // ═══════════════════════════════════════════════════════════════
 import { WebSocketServer } from 'ws';
 // ════════════════════════════════════════════════════════════════
-// 🆕 NEW: Import fs and path for timing log persistence
+// Import fs and path for timing log persistence
 // ════════════════════════════════════════════════════════════════
 import fs from 'fs';
 import path from 'path';
@@ -152,7 +152,7 @@ const httpsAgent = new https.Agent({
 const FETCH_TIMEOUT_MS = Number(process.env.FETCH_TIMEOUT_MS || 5000);
 /* -------------------------
  * ════════════════════════════════════════════════════════════════
- * 🆕 TIMING LOG SETUP
+ * TIMING LOG SETUP
  * ════════════════════════════════════════════════════════════════
  * ------------------------- */
 
@@ -172,7 +172,7 @@ function appendTimingLog(timestamp, event) {
     fs.appendFileSync(timingLogFile, logEntry);
     
     // ═══════════════════════════════════════════════════════════════════════════
-    // 🔬 ENHANCED TIMING BREAKDOWN - Full End-to-End View
+    // ENHANCED TIMING BREAKDOWN - Full End-to-End View
     // ═══════════════════════════════════════════════════════════════════════════
     
     const total = event.breakdowns?.total || 0;
@@ -182,11 +182,11 @@ function appendTimingLog(timestamp, event) {
     const hash = event.stages?.buyConfirmed?.hash || 'N/A';
     
     console.log('\n╔═══════════════════════════════════════════════════════════════════════════╗');
-    console.log('║              🎯 END-TO-END TIMING BREAKDOWN                               ║');
+    console.log('║              END-TO-END TIMING BREAKDOWN                               ║');
     console.log('╚═══════════════════════════════════════════════════════════════════════════╝');
-    console.log(`⚡ ${statusIcon} [${new Date(timestamp).toLocaleTimeString()}] ${author} → ${total}ms total`);
-    console.log(`📍 TX Hash: ${hash.slice(0, 10)}...${hash.slice(-8)}`);
-    console.log(`🔗 Order: ${event.metadata?.orderName || 'Manual'} | Chain: ${(event.metadata?.chain || 'bnb').toUpperCase()}\n`);
+    console.log(`${statusIcon} [${new Date(timestamp).toLocaleTimeString()}] ${author} → ${total}ms total`);
+    console.log(`TX Hash: ${hash.slice(0, 10)}...${hash.slice(-8)}`);
+    console.log(`Order: ${event.metadata?.orderName || 'Manual'} | Chain: ${(event.metadata?.chain || 'bnb').toUpperCase()}\n`);
     
     // ─────────────────────────────────────────────────────────────────────────
     // SECTION 1: Extension Timing (Tweet → Order Match)
@@ -368,7 +368,7 @@ app.get('/timing', (req, res) => {
           </style>
         </head>
         <body>
-          <h1>⚡ SlitSniper Timing Logs</h1>
+          <h1>SlitSniper Timing Logs</h1>
           <div class="info">
             <p>📭 No timing events yet</p>
             <p>Logs will appear here automatically when your sniper executes trades.</p>
@@ -635,7 +635,7 @@ app.get('/timing', (req, res) => {
         </style>
       </head>
       <body>
-        <h1>⚡ SlitSniper Timing Logs</h1>
+        <h1 SlitSniper Timing Logs</h1>
         <div class="refresh-note">🔄 Auto-refreshing every 5 seconds | Total events: ${logs.length}</div>
         
         ${statsHtml}
@@ -646,7 +646,7 @@ app.get('/timing', (req, res) => {
       </html>
     `);
   } catch (e) {
-    console.error('❌ Failed to render timing page:', e);
+    console.error('Failed to render timing page:', e);
     res.status(500).send('Error rendering timing logs');
   }
 });
@@ -719,7 +719,7 @@ function normalize(addr) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 💧 GET EXPECTED TOKENS OUT - Fetch quote from PancakeSwap
+// GET EXPECTED TOKENS OUT - Fetch quote from PancakeSwap
 // ═══════════════════════════════════════════════════════════════
 async function getExpectedTokensOut(tokenAddress, amountBNB) {
   try {
@@ -730,7 +730,7 @@ async function getExpectedTokensOut(tokenAddress, amountBNB) {
     const WBNB = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c';
     const bscRpc = 'https://bsc.rpc.blxrbdn.com';  // Use bloXroute (fast & reliable)
     
-    console.log(`💧 [SIGNER] Fetching quote for ${amountBNB} BNB → ${tokenAddress}`);
+    console.log(`[SIGNER] Fetching quote for ${amountBNB} BNB → ${tokenAddress}`);
     
     // Build the calldata for getAmountsOut(uint256 amountIn, address[] path)
     const amountInWei = BigInt(Math.floor(amountBNB * 1e18));
@@ -743,7 +743,7 @@ async function getExpectedTokensOut(tokenAddress, amountBNB) {
     const wbnbHex = WBNB.slice(2).toLowerCase().padStart(64, '0');
     const tokenHex = tokenAddress.slice(2).toLowerCase().padStart(64, '0');
     
-    // Full calldata (✅ FIXED: correct ABI encoding order)
+    // Full calldata (FIXED: correct ABI encoding order)
     const data = selector +
       amountHex + // amountIn (FIRST parameter)
       '0000000000000000000000000000000000000000000000000000000000000040' + // offset to path array (SECOND parameter)
@@ -781,14 +781,14 @@ async function getExpectedTokensOut(tokenAddress, amountBNB) {
     
     const result = json.result;
     if (!result || result === '0x') {
-      console.error(`💧 [SIGNER] Empty result from getAmountsOut`);
+      console.error(`[SIGNER] Empty result from getAmountsOut`);
       return null;
     }
     
     // Decode: result is uint256[] array with 2 elements
     // Result format: [0x][offset 32b][length 32b][amounts[0] 32b][amounts[1] 32b]
     // amounts[0] = amountIn echo (bytes 130-194)
-    // amounts[1] = amountOut (bytes 194-258) ✅ THIS IS WHAT WE WANT
+    // amounts[1] = amountOut (bytes 194-258) THIS IS WHAT WE WANT
     const amounts1Hex = result.slice(194, 258);
     const expectedTokens = BigInt('0x' + amounts1Hex).toString();
     
@@ -798,20 +798,20 @@ async function getExpectedTokensOut(tokenAddress, amountBNB) {
     return expectedTokens;
     
   } catch (err) {
-    console.error(`💧 [SIGNER] getExpectedTokensOut failed:`, err.message);
+    console.error(`[SIGNER] getExpectedTokensOut failed:`, err.message);
     return null;
   }
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 💧 GET EXPECTED TOKENS OUT - Four.meme Bonding Curve (Ungraduated)
+// GET EXPECTED TOKENS OUT - Four.meme Bonding Curve (Ungraduated)
 // ═══════════════════════════════════════════════════════════════
 async function getExpectedTokensOutFourMeme(tokenAddress, amountBNB) {
   try {
     const t0 = Date.now();
     const bscRpc = 'https://bsc.rpc.blxrbdn.com';  // Use bloXroute (fast & reliable)
     
-    console.log(`💧 [SIGNER] Fetching four.meme quote for ${amountBNB} BNB → ${tokenAddress}`);
+    console.log(' [SIGNER] Fetching four.meme quote for ${amountBNB} BNB → ${tokenAddress}`);
     
     const amountInWei = BigInt(Math.floor(amountBNB * 1e18));
     
@@ -840,20 +840,20 @@ async function getExpectedTokensOutFourMeme(tokenAddress, amountBNB) {
     });
     
     if (!response.ok) {
-      console.error(`💧 [SIGNER] Four.meme RPC HTTP error: ${response.status}`);
+      console.error(`[SIGNER] Four.meme RPC HTTP error: ${response.status}`);
       return null;
     }
     
     const json = await response.json();
     
     if (json.error) {
-      console.error(`💧 [SIGNER] Four.meme RPC error:`, json.error);
+      console.error(`[SIGNER] Four.meme RPC error:`, json.error);
       return null;
     }
     
     const result = json.result;
     if (!result || result === '0x') {
-      console.error(`💧 [SIGNER] Empty result from four.meme quote`);
+      console.error(`[SIGNER] Empty result from four.meme quote`);
       return null;
     }
     
@@ -865,18 +865,18 @@ async function getExpectedTokensOutFourMeme(tokenAddress, amountBNB) {
     const expectedTokens = estimatedAmount.toString();
     
     const elapsed = Date.now() - t0;
-    console.log(`💧 [SIGNER] Four.meme quote fetched in ${elapsed}ms → ${expectedTokens} tokens`);
+    console.log(`[SIGNER] Four.meme quote fetched in ${elapsed}ms → ${expectedTokens} tokens`);
     
     return expectedTokens;
     
   } catch (err) {
-    console.error(`💧 [SIGNER] getExpectedTokensOutFourMeme failed:`, err.message);
+    console.error(`[SIGNER] getExpectedTokensOutFourMeme failed:`, err.message);
     return null;
   }
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 💧 SMART QUOTE FETCHING - Auto-detects graduated vs ungraduated
+// SMART QUOTE FETCHING - Auto-detects graduated vs ungraduated
 // ═══════════════════════════════════════════════════════════════
 async function getExpectedTokensOutSmart(tokenAddress, amountBNB, routeHint = null) {
   try {
@@ -890,11 +890,11 @@ async function getExpectedTokensOutSmart(tokenAddress, amountBNB, routeHint = nu
     }
     
     // Auto-detect: try PancakeSwap first (faster for graduated tokens)
-    console.log(`💧 [SIGNER] Auto-detecting route for ${tokenAddress}...`);
+    console.log(`[SIGNER] Auto-detecting route for ${tokenAddress}...`);
     
     const pancakeQuote = await getExpectedTokensOut(tokenAddress, amountBNB);
     if (pancakeQuote) {
-      console.log(`💧 [SIGNER] ✅ Token is GRADUATED - using PancakeSwap`);
+      console.log(`💧 [SIGNER] Token is GRADUATED - using PancakeSwap`);
       return pancakeQuote;
     }
     
@@ -903,15 +903,15 @@ async function getExpectedTokensOutSmart(tokenAddress, amountBNB, routeHint = nu
     const fourMemeQuote = await getExpectedTokensOutFourMeme(tokenAddress, amountBNB);
     
     if (fourMemeQuote) {
-      console.log(`💧 [SIGNER] ✅ Token is UNGRADUATED - using four.meme bonding curve`);
+      console.log(`💧 [SIGNER] Token is UNGRADUATED - using four.meme bonding curve`);
       return fourMemeQuote;
     }
     
-    console.error(`💧 [SIGNER] ❌ Both routes failed for ${tokenAddress}`);
+    console.error(`[SIGNER] Both routes failed for ${tokenAddress}`);
     return null;
     
   } catch (err) {
-    console.error(`💧 [SIGNER] getExpectedTokensOutSmart failed:`, err.message);
+    console.error(`[SIGNER] getExpectedTokensOutSmart failed:`, err.message);
     return null;
   }
 }
@@ -944,7 +944,7 @@ async function refreshGasPrice() {
 }
 
 
-console.log('🚀 Initializing signer...\n');
+console.log('Initializing signer...\n');
 
 // CRITICAL: Warm crypto FIRST (before any gas price fetch)
 // This eliminates the 30-50ms cold start penalty on first signature
@@ -957,9 +957,9 @@ await Promise.all([
 ]);
 
 // Now fetch gas price with fully warmed connections and crypto
-console.log('[INIT] 📊 Fetching initial gas price...');
+console.log('[INIT] Fetching initial gas price...');
 await refreshGasPrice();
-console.log(`[INIT] ✅ Gas price cached: ${(Number(cachedGasPrice) / 1e9).toFixed(2)} gwei\n`);
+console.log(`[INIT] Gas price cached: ${(Number(cachedGasPrice) / 1e9).toFixed(2)} gwei\n`);
 setInterval(refreshGasPrice, 2000);
 
 /* -------------------------
@@ -1077,14 +1077,14 @@ async function sellBnbTokens(tokenAddr, amountTokens, gasGwei, sellNumber = 1) {
     const WBNB = normalize(WBNB_LC);
     const toAddr = await addrPromise;
     
-    // ⭐ Determine gas price based on which sell
+    // Determine gas price based on which sell
     const gasPriceToUse = sellNumber === 1 
       ? parseUnits('11', 'gwei')  // First sell: 11 gwei
       : parseUnits('1', 'gwei');   // Second sell: 1 gwei
     
     console.log(`[NIGHT MODE] Using ${sellNumber === 1 ? '11' : '1'} gwei for sell #${sellNumber}`);
     
-    // ⭐ STEP 1: Check if router has enough allowance, approve if needed
+    // STEP 1: Check if router has enough allowance, approve if needed
     const approveAbi = [
       'function allowance(address owner, address spender) view returns (uint256)',
       'function approve(address spender, uint256 amount) returns (bool)'
@@ -1126,12 +1126,12 @@ async function sellBnbTokens(tokenAddr, amountTokens, gasGwei, sellNumber = 1) {
       const approveHash = approveParsed.hash;
       
       await broadcastRawTxToAll(approveRaw);
-      console.log(`[NIGHT MODE] ✅ Approval tx: ${approveHash}`);
+      console.log(`[NIGHT MODE] Approval tx: ${approveHash}`);
       
       // Wait 1 second for approval to confirm
       await new Promise(resolve => setTimeout(resolve, 1000));
     } else {
-      console.log(`[NIGHT MODE] ✅ Router already approved`);
+      console.log(`[NIGHT MODE] Router already approved`);
     }
     
     // ⭐ STEP 2: Now execute the sell
@@ -1168,11 +1168,11 @@ async function sellBnbTokens(tokenAddr, amountTokens, gasGwei, sellNumber = 1) {
     
     await broadcastRawTxToAll(raw);
     
-    console.log(`[NIGHT MODE] ✅ Sell #${sellNumber} executed: ${hash}`);
+    console.log(`[NIGHT MODE] Sell #${sellNumber} executed: ${hash}`);
     return { ok: true, hash };
     
   } catch (e) {
-    console.error(`[NIGHT MODE] ❌ Sell #${sellNumber} failed:`, e.message);
+    console.error(`[NIGHT MODE] Sell #${sellNumber} failed:`, e.message);
     return { ok: false, error: e.message };
   }
 }
@@ -1223,11 +1223,11 @@ async function sellSolTokens(mint, amountTokens, priorityFee) {
       throw new Error(pumpJson.error || 'No signature returned');
     }
     
-    console.log(`[NIGHT MODE] ✅ Sell executed: ${sig}`);
+    console.log(`[NIGHT MODE] Sell executed: ${sig}`);
     return { ok: true, sig };
     
   } catch (e) {
-    console.error('[NIGHT MODE] ❌ SOL sell failed:', e.message);
+    console.error('[NIGHT MODE] SOL sell failed:', e.message);
     return { ok: false, error: e.message };
   }
 }
@@ -1238,13 +1238,13 @@ async function sellSolTokens(mint, amountTokens, priorityFee) {
  */
 async function sellUngraduatedToken(tokenAddr, amountTokens, gasGwei, sellNumber = 1) {
   try {
-    console.log(`[NIGHT MODE] 🔄 Selling UNGRADUATED ${amountTokens.toString()} tokens of ${tokenAddr}`);
+    console.log(`[NIGHT MODE] Selling UNGRADUATED ${amountTokens.toString()} tokens of ${tokenAddr}`);
     
     const toAddr = await addrPromise;
     
-    // ⚡ Verify we actually have the tokens
+    // Verify we actually have the tokens
     const actualBalance = await getTokenBalance(tokenAddr);
-    console.log(`[NIGHT MODE] 💰 Token balance: ${actualBalance.toString()}`);
+    console.log(`[NIGHT MODE] Token balance: ${actualBalance.toString()}`);
     
     if (actualBalance < amountTokens) {
       console.error(`[NIGHT MODE] ❌ Insufficient balance! Have ${actualBalance.toString()}, need ${amountTokens.toString()}`);
@@ -1269,13 +1269,13 @@ async function sellUngraduatedToken(tokenAddr, amountTokens, gasGwei, sellNumber
     const rawAllowance = await provider.call({ to: tokenAddr, data: allowanceData });
     const [currentAllowance] = approveIface.decodeFunctionResult('allowance', rawAllowance);
     
-    console.log(`[NIGHT MODE] 🔍 Allowance check:`);
+    console.log(`[NIGHT MODE]  Allowance check:`);
     console.log(`[NIGHT MODE]   Current TOKEN_MANAGER allowance: ${currentAllowance.toString()}`);
     console.log(`[NIGHT MODE]   Amount to sell: ${amountTokens.toString()}`);
     console.log(`[NIGHT MODE]   Sufficient: ${currentAllowance >= amountTokens ? '✅' : '❌'}`);
     
     if (currentAllowance < amountTokens) {
-      console.log(`[NIGHT MODE] 🔓 Approving TOKEN_MANAGER to spend tokens...`);
+      console.log(`[NIGHT MODE] Approving TOKEN_MANAGER to spend tokens...`);
       
       const maxApproval = BigInt('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff');
       const approveData = approveIface.encodeFunctionData('approve', [TOKEN_MANAGER, maxApproval]);
@@ -1297,12 +1297,12 @@ async function sellUngraduatedToken(tokenAddr, amountTokens, gasGwei, sellNumber
       const approveHash = approveParsed.hash;
       
       await broadcastRawTxToAll(approveRaw);
-      console.log(`[NIGHT MODE] ✅ TOKEN_MANAGER Approval tx: ${approveHash}`);
+      console.log(`[NIGHT MODE] TOKEN_MANAGER Approval tx: ${approveHash}`);
       
       // Wait 1 second for approval to propagate
       await new Promise(resolve => setTimeout(resolve, 1000));
     } else {
-      console.log(`[NIGHT MODE] ✅ TOKEN_MANAGER already approved`);
+      console.log(`[NIGHT MODE] TOKEN_MANAGER already approved`);
     }
     
     // Step 2: Call TOKEN_MANAGER directly with function selector 0x06e7b98f
@@ -1346,11 +1346,11 @@ async function sellUngraduatedToken(tokenAddr, amountTokens, gasGwei, sellNumber
     
     await broadcastRawTxToAll(raw);
     
-    console.log(`[NIGHT MODE] ✅ Ungraduated sell #${sellNumber} executed: ${hash}`);
+    console.log(`[NIGHT MODE] Ungraduated sell #${sellNumber} executed: ${hash}`);
     return { ok: true, hash };
     
   } catch (e) {
-    console.error(`[NIGHT MODE] ❌ Ungraduated sell #${sellNumber} failed:`, e.message);
+    console.error(`[NIGHT MODE] Ungraduated sell #${sellNumber} failed:`, e.message);
     return { ok: false, error: e.message };
   }
 }
@@ -1359,7 +1359,7 @@ async function sellUngraduatedToken(tokenAddr, amountTokens, gasGwei, sellNumber
  * Query Solana token balance
  */
 async function preWarmCrypto() {
-  console.log('[PREWARM] 🔥 Pre-warming crypto operations...');
+  console.log('[PREWARM] Pre-warming crypto operations...');
   
   try {
     const start = performance.now();
@@ -1392,14 +1392,14 @@ async function preWarmCrypto() {
     keccak256('0x' + '00'.repeat(256)); // 256 bytes
     
     const elapsed = performance.now() - start;
-    console.log(`[PREWARM] ✅ Crypto warmed in ${elapsed.toFixed(0)}ms (sign+hash)\n`);
+    console.log(`[PREWARM] Crypto warmed in ${elapsed.toFixed(0)}ms (sign+hash)\n`);
   } catch (e) {
-    console.log(`[PREWARM] ⚠️ Crypto pre-warm failed: ${e.message}`);
+    console.log(`[PREWARM] Crypto pre-warm failed: ${e.message}`);
   }
 }
 
 async function preWarmBscRpc() {
-  console.log('[PREWARM] 🌐 Pre-warming BSC RPC connections...');
+  console.log('[PREWARM] Pre-warming BSC RPC connections...');
   
   const warmPromises = providers.map(async (p, idx) => {
     try {
@@ -1410,15 +1410,15 @@ async function preWarmBscRpc() {
       await p.send('eth_gasPrice', []); // Also warm gas price endpoint
       
       const elapsed = performance.now() - start;
-      console.log(`[PREWARM] ✅ RPC #${idx + 1} warmed in ${elapsed.toFixed(0)}ms`);
+      console.log(`[PREWARM] RPC #${idx + 1} warmed in ${elapsed.toFixed(0)}ms`);
     } catch (e) {
-      console.log(`[PREWARM] ⚠️ RPC #${idx + 1} pre-warm failed: ${e.message}`);
+      console.log(`[PREWARM] RPC #${idx + 1} pre-warm failed: ${e.message}`);
     }
   });
   
   // Warm all RPCs in parallel
   await Promise.allSettled(warmPromises);
-  console.log('[PREWARM] ✅ All BSC RPCs ready\n');
+  console.log('[PREWARM] All BSC RPCs ready\n');
 }
 async function getSolTokenBalance(mint) {
   try {
@@ -1470,13 +1470,13 @@ function scheduleNightModeSells(token, chain, gasGwei, priorityFee, route, sellA
   // Use custom timing or default to 2 seconds
   const delayMs = (sellAfterSeconds || 2) * 1000;
   
-  console.log(`[NIGHT MODE] 🌙 Scheduling sell for ${token} on ${chain}`);
-  console.log(`[NIGHT MODE] 📅 100% @ ${sellAfterSeconds}s (11 gwei)`);
+  console.log(`[NIGHT MODE] Scheduling sell for ${token} on ${chain}`);
+  console.log(`[NIGHT MODE] 100% @ ${sellAfterSeconds}s (11 gwei)`);
   
   // Timer: Sell 100% at specified time with 11 gwei
   const timer1 = setTimeout(async () => {
     try {
-      console.log(`[NIGHT MODE] ⏰ ${sellAfterSeconds}s elapsed - executing 100% sell`);
+      console.log(`[NIGHT MODE] ${sellAfterSeconds}s elapsed - executing 100% sell`);
       
       if (chain === 'sol') {
         // Solana: Retry up to 3 seconds if no balance
@@ -1491,7 +1491,7 @@ function scheduleNightModeSells(token, chain, gasGwei, priorityFee, route, sellA
           }
           
           if (attempt < maxRetries) {
-            console.log(`[NIGHT MODE] ⚠️ No balance yet, retrying in 200ms (attempt ${attempt + 1}/${maxRetries})`);
+            console.log(`[NIGHT MODE] No balance yet, retrying in 200ms (attempt ${attempt + 1}/${maxRetries})`);
             await new Promise(resolve => setTimeout(resolve, 200));
           }
         }
@@ -1499,7 +1499,7 @@ function scheduleNightModeSells(token, chain, gasGwei, priorityFee, route, sellA
         if (balance > 0n) {
           await sellSolTokens(token, balance.toString(), priorityFee);
         } else {
-          console.log('[NIGHT MODE] ❌ No balance after 3s of retries - giving up');
+          console.log('[NIGHT MODE] No balance after 3s of retries - giving up');
         }
       } else {
         // BNB chain: Retry up to 3 seconds if no balance
@@ -1514,35 +1514,35 @@ function scheduleNightModeSells(token, chain, gasGwei, priorityFee, route, sellA
           }
           
           if (attempt < maxRetries) {
-            console.log(`[NIGHT MODE] ⚠️ No balance yet, retrying in 200ms (attempt ${attempt + 1}/${maxRetries})`);
+            console.log(`[NIGHT MODE] No balance yet, retrying in 200ms (attempt ${attempt + 1}/${maxRetries})`);
             await new Promise(resolve => setTimeout(resolve, 200));
           }
         }
         
         if (balance > 0n) {
           // Use the route that was determined during buy
-          console.log(`[NIGHT MODE] 🔍 Route (from buy): "${route}" for token ${token}`);
+          console.log(`[NIGHT MODE] Route (from buy): "${route}" for token ${token}`);
           
           if (route === 'four') {
             // Ungraduated token - use sellUngraduatedToken
-            console.log(`[NIGHT MODE] 🔄 Token is UNGRADUATED - using bonding curve sell`);
+            console.log(`[NIGHT MODE] Token is UNGRADUATED - using bonding curve sell`);
             await sellUngraduatedToken(token, balance, gasGwei, 1);
           } else {
             // Graduated token - use standard PancakeSwap sell
-            console.log(`[NIGHT MODE] 📊 Token is GRADUATED - using PancakeSwap sell (route: ${route})`);
+            console.log(`[NIGHT MODE] Token is GRADUATED - using PancakeSwap sell (route: ${route})`);
             await sellBnbTokens(token, balance, gasGwei, 1);
           }
         } else {
-          console.log('[NIGHT MODE] ❌ No balance after 3s of retries - giving up');
+          console.log('[NIGHT MODE] No balance after 3s of retries - giving up');
         }
       }
       
       // Cleanup after sell
       nightModeTimers.delete(key);
-      console.log(`[NIGHT MODE] ✅ Night mode complete for ${token}`);
+      console.log(`[NIGHT MODE] Night mode complete for ${token}`);
       
     } catch (e) {
-      console.error('[NIGHT MODE] ❌ 100% sell error:', e);
+      console.error('[NIGHT MODE] 100% sell error:', e);
     }
   }, delayMs);  // Use custom timing
   
@@ -1794,7 +1794,7 @@ async function handleSolSwapInternal(reqBody) {
   }
 
   // success
-  console.log(`[SOL] ✅ Success! Signature: ${sig} (total: ${totalMs}ms)`);
+  console.log(`[SOL] Success! Signature: ${sig} (total: ${totalMs}ms)`);
   return {
     ok: true,
     sig,
@@ -1843,9 +1843,9 @@ async function preWarmPumpPortal() {
     
     // We expect this to fail, but it establishes the connection
     await response.json().catch(() => {});
-    console.log('[PREWARM] ✅ PumpPortal connection established');
+    console.log('[PREWARM]  PumpPortal connection established');
   } catch (e) {
-    console.log('[PREWARM] ⚠️ Pre-warm failed (not critical):', e.message);
+    console.log('[PREWARM] Pre-warm failed (not critical):', e.message);
   }
 }
 
@@ -1905,12 +1905,12 @@ app.post('/swap', async (req, res) => {
     const slippagePct = slippage !== undefined && slippage !== null ? Number(slippage) : 0;
     
     if (slippagePct > 0 && !expectedTokens) {
-      console.log(`💧 [SIGNER] Slippage ${slippagePct}% set, fetching expectedTokens...`);
+      console.log(`[SIGNER] Slippage ${slippagePct}% set, fetching expectedTokens...`);
       expectedTokens = await getExpectedTokensOut(TOKEN, Number(amountBNB));
       if (expectedTokens) {
-        console.log(`💧 [SIGNER] Will use slippage protection: ${slippagePct}%`);
+        console.log(`[SIGNER] Will use slippage protection: ${slippagePct}%`);
       } else {
-        console.log(`💧 [SIGNER] Quote fetch failed, proceeding without slippage protection`);
+        console.log(`[SIGNER] Quote fetch failed, proceeding without slippage protection`);
       }
     }
     
@@ -2031,7 +2031,7 @@ markBscActivity();
 
     const t1 = performance.now();
 
-    // ⭐ NIGHT MODE: Schedule sells if enabled (AFTER successful broadcast)
+    // NIGHT MODE: Schedule sells if enabled (AFTER successful broadcast)
     if (req.body.nightMode) {
       setImmediate(() => {
         scheduleNightModeSells(
@@ -2183,7 +2183,7 @@ app.post('/swapSol', async (req, res) => {
     }
     markSolActivity();
 
-    // ⭐ NIGHT MODE: Schedule sells if enabled
+    // NIGHT MODE: Schedule sells if enabled
     if (req.body.nightMode) {
       const mintAddr = String(mint).trim();
       setImmediate(() => {
@@ -2323,7 +2323,7 @@ function markSolActivity() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 🚀 WebSocket Server Setup (Ultra-Low Latency ~2-3ms)
+// WebSocket Server Setup (Ultra-Low Latency ~2-3ms)
 // ═══════════════════════════════════════════════════════════════
 
 const WS_PORT = Number(process.env.WS_PORT || 8788);
@@ -2390,16 +2390,16 @@ wss.on('connection', (ws, req) => {
         
         // If slippage is set but expectedTokens not provided, fetch from PancakeSwap
         if (slippage > 0 && !expectedTokens) {
-          console.log(`💧 [WS-SIGNER] Slippage ${slippage}% set, fetching expectedTokens...`);
+          console.log(`[WS-SIGNER] Slippage ${slippage}% set, fetching expectedTokens...`);
           
           // Use smart quote fetching with route hint from reqBody.mode
           const routeHint = reqBody.mode; // 'four' or 'pancake' or undefined for auto-detect
           expectedTokens = await getExpectedTokensOutSmart(TOKEN, Number(amountBNB), routeHint);
           
           if (expectedTokens) {
-            console.log(`💧 [WS-SIGNER] Will use slippage protection: ${slippage}%`);
+            console.log(`[WS-SIGNER] Will use slippage protection: ${slippage}%`);
           } else {
-            console.log(`💧 [WS-SIGNER] Quote fetch failed, proceeding without slippage protection`);
+            console.log(`[WS-SIGNER] Quote fetch failed, proceeding without slippage protection`);
           }
         }
         
@@ -2616,8 +2616,8 @@ wss.on('error', (err) => {
 
 app.listen(PORT, '127.0.0.1', async () => {
   console.log(`\n${'='.repeat(60)}`);
-  console.log(`🚀 OPTIMIZED Signer listening on http://127.0.0.1:${PORT}`);
-  console.log(`🔌 WebSocket Server listening on ws://127.0.0.1:${WS_PORT}`);
+  console.log(`OPTIMIZED Signer listening on http://127.0.0.1:${PORT}`);
+  console.log(`WebSocket Server listening on ws://127.0.0.1:${WS_PORT}`);
   console.log(`${'='.repeat(60)}`);
   console.log('Wallet (BSC):', await addrPromise);
   console.log('BSC RPC endpoints:', RPCS.join(', '));
@@ -2626,15 +2626,15 @@ app.listen(PORT, '127.0.0.1', async () => {
   console.log('Solana RPC endpoints:', SOL_RPC_LIST.join(', ') || '(none)');
   console.log(`Fetch timeout: ${FETCH_TIMEOUT_MS}ms`);
   console.log(`HTTP Agent: keepAlive enabled (maxSockets: 10)`);
-  console.log(`📊 Timing logs: http://127.0.0.1:${PORT}/timing`);
-  console.log(`📁 Log file: ${timingLogFile}`);
+  console.log(`Timing logs: http://127.0.0.1:${PORT}/timing`);
+  console.log(`Log file: ${timingLogFile}`);
   console.log(`${'='.repeat(60)}\n`);
   
   console.log('[KEEPALIVE] Starting auto-keepalive (every 2 minutes)');
   setInterval(keepAliveAll, KEEPALIVE_INTERVAL_MS);
-  console.log('[KEEPALIVE] ✅ Active\n');
+  console.log('[KEEPALIVE] Active\n');
   
-  console.log('✅ Server ready - all connections warmed!\n');
+  console.log('Server ready - all connections warmed!\n');
 });
 
 // optional export if you ever want to import this helper somewhere else
