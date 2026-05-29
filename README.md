@@ -1,15 +1,17 @@
 > ⚠️ DISCLAIMER: THIS PROGRAM IS NOT RELIABLE FOR ANY FINANCIAL LOSS. USE AT YOUR OWN RISK.
-<img width="865" height="769" alt="project1-1" src="https://github.com/user-attachments/assets/5ddedd37-19e7-4bf8-9585-8919400c6c04" />
-<img width="922" height="770" alt="project1-2" src="https://github.com/user-attachments/assets/fc8ced3f-a591-4ff9-9949-ba58a67f1f24" />
+<p>
+  <img alt="project1-1" src="https://github.com/user-attachments/assets/5ddedd37-19e7-4bf8-9585-8919400c6c04" width="49%"/>
+  <img alt="project1-2" src="https://github.com/user-attachments/assets/fc8ced3f-a591-4ff9-9949-ba58a67f1f24" width="49%"/>
+</p>
 
 # Memecoin Sniper (BSC & Solana)
 
-A low-latency, event-driven trading system designed to detect early signals from social media and execute token purchases in real time across Binance Smart Chain and Solana.
+A low-latency, event-driven trading system designed to detect early signals from twitter/X and execute token purchases in real time across Binance Smart Chain and Solana.
 
 ---
 
 ## Overview
-The system monitors tweet activity from key accounts, extracts relevant signals using keyword and image-based heuristics, and automatically executes trades within milliseconds of detection.
+The system monitors tweet activity from key accounts, extracts relevant signals using keyword and image-based heuristics, and automatically executes trades in 4-6ms.
 
 ---
 
@@ -23,10 +25,10 @@ The system monitors tweet activity from key accounts, extracts relevant signals 
   - Executes transactions on BNB and Solana
   - Supports multi-wallet and parallel execution paths
 
-- **Low Latency Infrastructure**
-  - Average execution latency: ~30ms  
-  - Best observed: ~11ms  
-  - Designed to achieve same-block inclusion when possible
+- **Ultra Low Latency**
+  - Average tick to trade: ~4ms  
+  - Average execution approval latency: ~30ms  
+  - Consistently achieves same block inclusion
 
 - **Browser Extension UI**
   - Displays detected signals and trade status in real time
