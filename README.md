@@ -1,4 +1,6 @@
 > ⚠️ DISCLAIMER: THIS PROGRAM IS NOT RELIABLE FOR ANY FINANCIAL LOSS. USE AT YOUR OWN RISK.
+<img width="865" height="769" alt="project1-1" src="https://github.com/user-attachments/assets/5ddedd37-19e7-4bf8-9585-8919400c6c04" />
+<img width="922" height="770" alt="project1-2" src="https://github.com/user-attachments/assets/fc8ced3f-a591-4ff9-9949-ba58a67f1f24" />
 
 # Memecoin Sniper (BSC & Solana)
 
