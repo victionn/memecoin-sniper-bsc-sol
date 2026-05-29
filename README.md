@@ -1,3 +1,5 @@
+> ⚠️ DISCLAIMER: THIS PROGRAM IS NOT RELIABLE FOR ANY FINANCIAL LOSS. USE AT YOUR OWN RISK.
+
 # Memecoin Sniper (BSC & Solana)
 
 A low-latency, event-driven trading system designed to detect early signals from social media and execute token purchases in real time across Binance Smart Chain and Solana.
